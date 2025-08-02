@@ -13,16 +13,12 @@ from keras_facenet import FaceNet
 from sklearn.preprocessing import Normalizer
 from sklearn.svm import SVC
 
-# =======================
-# Configuration
-# =======================
 MODEL_PATH = 'face_recognizer.pkl'
 DATASET_PATH = 'Faces1'
 THRESHOLD = 0.25
 REQUIRED_SIZE = (160, 160)
 FORCE_RETRAIN = False
 
-# MySQL Configuration
 db_config = {
     'host': 'localhost',
     'user': 'root',
@@ -30,19 +26,15 @@ db_config = {
     'database': 'face_recognition'
 }
 
-# =======================
-# Initialize App & Components
-# =======================
+
 app = Flask(__name__)
-CORS(app, resources={r"": {"origins": "*"}}, supports_credentials=True)
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 model = FaceNet()
 detector = MTCNN()
 normalizer = Normalizer(norm='l2')
 
-# =======================
-# Utility Functions
-# =======================
+
 def extract_face(image, required_size=REQUIRED_SIZE):
     faces = detector.detect_faces(image)
     face_images, face_boxes = [], []
@@ -124,14 +116,10 @@ def get_registered_users_with_images():
 
     return users
 
-# =======================
-# Load Classifier
-# =======================
+
 classifier = train_or_load_model()
 
-# =======================
-# API Routes
-# =======================
+
 @app.route('/register', methods=['POST', 'OPTIONS'])
 def register_face():
     if request.method == 'OPTIONS':
@@ -185,11 +173,10 @@ def register_face():
             filepath = os.path.join(save_path, filename)
             cv2.imwrite(filepath, aug_img)
 
-        # Save user in DB
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor()
-        cursor.execute("""
-            INSERT INTO registered_users (name, email, user_id, role, purpose, created_at)
+        cursor.execute(""" 
+            INSERT INTO registered_users (name, email, user_id, role, purpose, created_at) 
             VALUES (%s, %s, %s, %s, %s, NOW())
         """, (name, email, user_id, role, purpose))
         conn.commit()
@@ -239,36 +226,114 @@ def recognize_face():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/registered_users', methods=['GET'])
-def list_users():
-    return jsonify({'users': get_registered_users_with_images()})
 
-@app.route('/delete_user/<user_id>', methods=['DELETE'])
+@app.route('/delete_user/<user_id>', methods=['DELETE', 'OPTIONS'])
 def delete_user(user_id):
-    try:
-        user_path = os.path.join(DATASET_PATH, user_id)
-        if os.path.exists(user_path):
-            for root, dirs, files in os.walk(user_path, topdown=False):
-                for file in files:
-                    os.remove(os.path.join(root, file))
-                os.rmdir(root)
+    if request.method == 'OPTIONS':
+        return '', 204
 
+    try:
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor()
+
+        cursor.execute("SELECT COUNT(*) FROM registered_users WHERE user_id = %s", (user_id,))
+        if cursor.fetchone()[0] == 0:
+            return jsonify({'error': f"User with ID {user_id} does not exist"}), 404
+
         cursor.execute("DELETE FROM registered_users WHERE user_id = %s", (user_id,))
         conn.commit()
+
+        user_folder = os.path.join(DATASET_PATH, user_id)
+        if os.path.exists(user_folder):
+            for root, dirs, files in os.walk(user_folder):
+                for file in files:
+                    os.remove(os.path.join(root, file))
+            os.rmdir(user_folder)
+
         cursor.close()
         conn.close()
 
         global classifier
         classifier = train_or_load_model()
 
-        return jsonify({'message': f"User {user_id} deleted"}), 200
+        return jsonify({'message': f"User {user_id} deleted successfully"}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-# =======================
-# Run App
-# =======================
+
+@app.route('/registered_users', methods=['GET'])
+def list_users():
+    return jsonify({'users': get_registered_users_with_images()})
+
+@app.route('/api/users/<user_id>',methods= ['PUT', 'OPTIONS'])
+def edit_user(user_id):
+    if request.method == 'OPTIONS':
+        return '', 204
+
+    data = request.get_json()
+    name = data.get('name')
+    email = data.get('email')
+    role = data.get('role')
+    purpose = data.get('purpose')
+    new_image_data = data.get('image')
+
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT COUNT(*) FROM registered_users WHERE user_id = %s", (user_id,))
+        if cursor.fetchone()[0] == 0:
+            return jsonify({'error': f"User with ID {user_id} does not exist"}), 404
+
+        cursor.execute(""" 
+            UPDATE registered_users 
+            SET name = %s, email = %s, role = %s, purpose = %s 
+            WHERE user_id = %s
+        """, (name, email, role, purpose, user_id))
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+      
+        if new_image_data:
+            save_path = os.path.join(DATASET_PATH, user_id)
+            if os.path.exists(save_path):
+                for root, dirs, files in os.walk(save_path):
+                    for file in files:
+                        os.remove(os.path.join(root, file))
+            else:
+               
+                os.makedirs(save_path, exist_ok=True)
+
+            new_image_bytes = base64.b64decode(new_image_data.split(',')[1])
+            nparr = np.frombuffer(new_image_bytes, np.uint8)
+            img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+            augmented_images = [
+                img, cv2.flip(img, 1), cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE),
+                cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE), cv2.GaussianBlur(img, (5, 5), 0)
+            ]
+
+            while len(augmented_images) < 20:
+                noisy_img = img.copy()
+                noise = np.random.normal(0, 10, noisy_img.shape).astype(np.uint8)
+                noisy_img = cv2.add(noisy_img, noise)
+                augmented_images.append(noisy_img)
+
+            for idx, aug_img in enumerate(augmented_images[:20]):
+                filename = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{idx}.jpg"
+                filepath = os.path.join(save_path, filename)
+                cv2.imwrite(filepath, aug_img)
+
+            global classifier
+            classifier = train_or_load_model()
+
+        return jsonify({'message': f"User {user_id} updated successfully."}), 200
+    except Exception as e:
+        print(f"Error updating user {user_id}: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(debug=True)
+    
