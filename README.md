@@ -1,4 +1,3 @@
-
 # Face Recognition and Entry Monitoring System
 
 An AI-powered face recognition system for secure entry management, designed to streamline user registration, entry tracking, and real-time monitoring with image-based authentication.
@@ -7,27 +6,27 @@ An AI-powered face recognition system for secure entry management, designed to s
 
 ## 🚀 Features
 
--  User Registration with Profile Image Upload
--  AI-Powered Face Recognition using OpenCV
--  Real-time Entry Monitoring
--  Secure Admin Panel to Manage Users
--  User Editing with Image Replacement & Augmentation
--  Image Augmentation for Robust Face Recognition
--  MySQL Database Integration
--  Frontend built with React
--  Flask Backend API for seamless integration
+-  User Registration with Profile Image Upload  
+-  AI-Powered Face Recognition using OpenCV  
+-  Real-time Entry Monitoring  
+-  Secure Admin Panel to Manage Users  
+-  User Editing with Image Replacement & Augmentation  
+-  Image Augmentation for Robust Face Recognition  
+-  MySQL Database Integration  
+-  Frontend built with React  
+-  Flask Backend API for seamless integration  
 
 ---
 
 ## 🛠 Tech Stack
 
-| Technology   | Description                     |
-|--------------|---------------------------------|
-| **Frontend** | React, Axios, React Router      |
-| **Backend**  | Flask, OpenCV, Numpy            |
-| **Database** | MySQL                           |
+| Technology   | Description                           |
+|--------------|---------------------------------------|
+| **Frontend** | React, Axios, React Router            |
+| **Backend**  | Flask, OpenCV, Numpy                  |
+| **Database** | MySQL                                 |
 | **Image Processing** | OpenCV, Face Detection & Recognition |
-| **Other**    | Git, GitHub, REST API           |
+| **Other**    | Git, GitHub, REST API                 |
 
 ---
 
@@ -54,7 +53,7 @@ FaceRecognitionAndEntryMonitoring/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/Chenna000/Face-Recognition-and-Entry-Monitoring.git
+git clone https://github.com/deshavathvenkateswaranaik0193/Face-Recognition-and-Entry-Monitoring.git
 cd FaceRecognitionAndEntryMonitoring
 ```
 
@@ -80,33 +79,33 @@ npm run dev
 
 ## 📸 User Image Handling
 
-- During user edit, profile images can be updated.
-- New images replace old ones and go through automatic augmentation (rotation, flipping, blur) for improved recognition accuracy.
-- Face recognition model re-trains after image updates.
+- During user edit, profile images can be updated.  
+- New images replace old ones and go through automatic augmentation (rotation, flipping, blur) for improved recognition accuracy.  
+- Face recognition model re-trains after image updates.  
 
 ---
 
 ## 🎯 Future Enhancements
 
-- Live camera-based entry detection
-- Real-time notifications for unauthorized access
-- Admin activity logs
-- Improved face recognition with deep learning models
+- Live camera-based entry detection  
+- Real-time notifications for unauthorized access  
+- Admin activity logs  
+- Improved face recognition with deep learning models  
 
 ---
 
 ## 📢 Acknowledgements
 
-- OpenCV for image processing
-- React for modern UI
-- Flask for lightweight API development
+- OpenCV for image processing  
+- React for modern UI  
+- Flask for lightweight API development  
 
 ---
 
 ## 🖋 Author
 
-**Chenna Yenugu**  
-[GitHub Profile](https://github.com/Chenna000)
+**Deshavath Venkateswara Naik**  
+[GitHub Profile](https://github.com/deshavathvenkateswaranaik0193)
 
 ---
 
