@@ -21,11 +21,10 @@ FORCE_RETRAIN = False
 
 db_config = {
     'host': 'localhost',
-    'user': 'root',
-    'password': 'Aswini@123',
+    'user': 'venky',
+    'password': 'Venky@12345',
     'database': 'face_recognition'
 }
-
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)

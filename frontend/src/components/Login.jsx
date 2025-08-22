@@ -37,11 +37,11 @@ export default function Login() {
       <Toaster />
       <div className="login-card">
         <h1 className="login-title">Welcome Back 👋</h1>
-        <p className="login-subtitle">Please enter your login details</p>
+        <p className="login-subtitle">Sign in to continue to your dashboard</p>
         <form onSubmit={handleLogin}>
           <input
             type="email"
-            placeholder="Email"
+            placeholder="Email Address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="input-field"
@@ -56,11 +56,11 @@ export default function Login() {
             required
           />
           <button type="submit" className="btn-login" disabled={loading}>
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? 'Authenticating...' : 'Login'}
           </button>
         </form>
         <p className="register-link">
-          Don't have an account? <Link to="/register" className="link">Register here</Link>
+          New here? <Link to="/register" className="link">Create an account</Link>
         </p>
       </div>
 
@@ -70,19 +70,22 @@ export default function Login() {
           justify-content: center;
           align-items: center;
           height: 100vh;
-          width: 175vh;
-          background: linear-gradient(135deg, #1e3a8a, #9333ea);
+          width: 100%;
+          background: linear-gradient(135deg, #4f46e5, #9333ea);
+          padding: 20px;
         }
 
         .login-card {
-          background: #fff;
-          padding: 40px;
-          border-radius: 16px;
-          box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(12px);
+          padding: 50px 40px;
+          border-radius: 20px;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
           width: 100%;
-          max-width: 400px;
+          max-width: 420px;
           text-align: center;
-          animation: fadeIn 0.6s ease;
+          color: white;
+          animation: fadeIn 0.7s ease;
         }
 
         @keyframes fadeIn {
@@ -91,63 +94,74 @@ export default function Login() {
         }
 
         .login-title {
-          font-size: 2rem;
-          color: #4f46e5;
+          font-size: 2.2rem;
+          font-weight: 700;
           margin-bottom: 10px;
+          letter-spacing: -0.5px;
         }
 
         .login-subtitle {
-          color: #555;
-          margin-bottom: 25px;
+          color: #e0e7ff;
+          margin-bottom: 30px;
+          font-size: 1rem;
         }
 
         .input-field {
           width: 100%;
-          padding: 12px;
-          margin: 10px 0;
-          border-radius: 10px;
-          border: 1px solid #ccc;
-          background:rgb(73, 176, 168);
+          padding: 14px;
+          margin: 12px 0;
+          border-radius: 12px;
+          border: 1px solid rgba(255,255,255,0.3);
+          background: rgba(255, 255, 255, 0.15);
+          color: white;
           font-size: 1rem;
-          transition: 0.3s;
+          transition: 0.3s ease;
+        }
+
+        .input-field::placeholder {
+          color: rgba(255,255,255,0.7);
         }
 
         .input-field:focus {
-          border-color: #6366f1;
-          background-color:rgb(17, 22, 23);
+          border-color: #a78bfa;
+          background: rgba(255, 255, 255, 0.25);
           outline: none;
+          transform: scale(1.02);
         }
 
         .btn-login {
           width: 100%;
-          padding: 12px;
+          padding: 14px;
           margin-top: 20px;
           background: linear-gradient(to right, #6366f1, #8b5cf6);
           color: white;
           font-size: 1.1rem;
           font-weight: 600;
           border: none;
-          border-radius: 10px;
+          border-radius: 12px;
           cursor: pointer;
+          transition: 0.3s;
         }
 
         .btn-login:hover {
+          transform: translateY(-2px);
           background: linear-gradient(to right, #4f46e5, #7c3aed);
+          box-shadow: 0 6px 15px rgba(0,0,0,0.3);
         }
 
         .btn-login:disabled {
-          background-color: #ddd;
+          background: #aaa;
           cursor: not-allowed;
         }
 
         .register-link {
-          margin-top: 20px;
-          font-size: 0.9rem;
-          color: #333;
+          margin-top: 25px;
+          font-size: 0.95rem;
+          color: #e0e7ff;
         }
 
         .link {
-          color: #4f46e5;
+          color: #c4b5fd;
           font-weight: 600;
           text-decoration: none;
         }
